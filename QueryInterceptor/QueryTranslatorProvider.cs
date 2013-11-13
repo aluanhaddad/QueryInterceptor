@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QueryInterceptor
 {
@@ -26,7 +29,7 @@ namespace QueryInterceptor
         }
     }
 
-    internal class QueryTranslatorProvider<T> : QueryTranslatorProvider, IQueryProvider
+    internal class QueryTranslatorProvider<T> : QueryTranslatorProvider, IQueryProvider, IDbAsyncQueryProvider
     {
         private readonly IEnumerable<ExpressionVisitor> _visitors;
 
@@ -69,8 +72,8 @@ namespace QueryInterceptor
             {
                 throw new ArgumentNullException("expression");
             }
-            object result = (this as IQueryProvider).Execute(expression);
-            return (TResult)result;
+
+            return (TResult)(this as IQueryProvider).Execute(expression);
         }
 
         public object Execute(Expression expression)
@@ -82,6 +85,16 @@ namespace QueryInterceptor
 
             Expression translated = VisitAll(expression);
             return Source.Provider.Execute(translated);
+        }
+
+        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(Execute<TResult>(expression));
+        }
+
+        public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(Execute(expression));
         }
 
         internal IEnumerable ExecuteEnumerable(Expression expression)

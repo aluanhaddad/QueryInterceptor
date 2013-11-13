@@ -12,6 +12,7 @@ namespace QueryInterceptor
             {
                 throw new ArgumentNullException("source");
             }
+
             return new QueryTranslator<T>(source, visitors);
         }
     }

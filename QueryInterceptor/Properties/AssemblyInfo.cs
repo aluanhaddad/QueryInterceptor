@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("QueryInterceptor")]
-[assembly: AssemblyDescription("Exposes a generic extension method to IQueryable<T> that allows interception of expression trees with expression visitors.")]
+[assembly: AssemblyTitle("QueryInterceptorAsync")]
+[assembly: AssemblyDescription("Exposes a generic extension method to IQueryable<T> and IDbAsyncQueryProvider<T> that allows interception of expression trees with expression visitors.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("David Fowler")]
+[assembly: AssemblyCompany("David Fowler, Stef Heyenrath")]
 [assembly: AssemblyProduct("QueryInterceptor")]
-[assembly: AssemblyCopyright("Copyright © David Fowler 2011")]
+[assembly: AssemblyCopyright("Copyright © David Fowler 2011, Stef Heyenrath 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.2.0")]
+[assembly: AssemblyVersion("0.3.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
