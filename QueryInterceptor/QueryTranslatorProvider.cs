@@ -29,17 +29,18 @@ namespace QueryInterceptor
         }
     }
 
-    internal class QueryTranslatorProvider<T> : QueryTranslatorProvider, IQueryProvider, IDbAsyncQueryProvider
+    internal class QueryTranslatorProviderAsync : QueryTranslatorProvider, IDbAsyncQueryProvider
     {
         private readonly IEnumerable<ExpressionVisitor> _visitors;
 
-        public QueryTranslatorProvider(IQueryable source, IEnumerable<ExpressionVisitor> visitors)
+        public QueryTranslatorProviderAsync(IQueryable source, IEnumerable<ExpressionVisitor> visitors)
             : base(source)
         {
             if (visitors == null)
             {
                 throw new ArgumentNullException("visitors");
             }
+
             _visitors = visitors;
         }
 
@@ -50,7 +51,7 @@ namespace QueryInterceptor
                 throw new ArgumentNullException("expression");
             }
 
-            return new QueryTranslator<TElement>(Source, expression, _visitors) as IQueryable<TElement>;
+            return new QueryTranslator<TElement>(Source, expression, _visitors);
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -61,9 +62,7 @@ namespace QueryInterceptor
             }
 
             Type elementType = expression.Type.GetGenericArguments().First();
-            IQueryable result = (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType),
-                    new object[] { Source, expression, _visitors });
-            return result;
+            return (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType), new object[] { Source, expression, _visitors });
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -83,7 +82,7 @@ namespace QueryInterceptor
                 throw new ArgumentNullException("expression");
             }
 
-            Expression translated = VisitAll(expression);
+            var translated = VisitAll(expression);
             return Source.Provider.Execute(translated);
         }
 
@@ -104,7 +103,7 @@ namespace QueryInterceptor
                 throw new ArgumentNullException("expression");
             }
 
-            Expression translated = VisitAll(expression);
+            var translated = VisitAll(expression);
             return Source.Provider.CreateQuery(translated);
         }
 
@@ -113,16 +112,14 @@ namespace QueryInterceptor
             // Run all visitors in order
             var visitors = new ExpressionVisitor[] { this }.Concat(_visitors);
 
-            return visitors.Aggregate<ExpressionVisitor, Expression>(expression, (expr, visitor) => visitor.Visit(expr));
+            return visitors.Aggregate(expression, (expr, visitor) => visitor.Visit(expr));
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
             // Fix up the Expression tree to work with the underlying LINQ provider
-            if (node.Type.IsGenericType &&
-                node.Type.GetGenericTypeDefinition() == typeof(QueryTranslator<>))
+            if (node.Type.IsGenericType && node.Type.GetGenericTypeDefinition() == typeof(QueryTranslator<>))
             {
-
                 var provider = ((IQueryable)node.Value).Provider as QueryTranslatorProvider;
 
                 if (provider != null)

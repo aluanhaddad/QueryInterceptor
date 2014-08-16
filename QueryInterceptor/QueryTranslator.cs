@@ -9,7 +9,7 @@ namespace QueryInterceptor
     internal class QueryTranslator<T> : IOrderedQueryable<T>
     {
         private readonly Expression _expression;
-        private readonly QueryTranslatorProvider<T> _provider;
+        private readonly QueryTranslatorProviderAsync _provider;
 
         public QueryTranslator(IQueryable source, IEnumerable<ExpressionVisitor> visitors)
         {
@@ -24,17 +24,28 @@ namespace QueryInterceptor
             }
 
             _expression = Expression.Constant(this);
-            _provider = new QueryTranslatorProvider<T>(source, visitors);
+            _provider = new QueryTranslatorProviderAsync(source, visitors);
         }
 
         public QueryTranslator(IQueryable source, Expression expression, IEnumerable<ExpressionVisitor> visitors)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+
             if (expression == null)
             {
                 throw new ArgumentNullException("expression");
             }
+
+            if (visitors == null)
+            {
+                throw new ArgumentNullException("visitors");
+            }
+
             _expression = expression;
-            _provider = new QueryTranslatorProvider<T>(source, visitors);
+            _provider = new QueryTranslatorProviderAsync(source, visitors);
         }
 
         public IEnumerator<T> GetEnumerator()

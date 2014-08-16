@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -9,8 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Exposes a generic extension method to IQueryable<T> and IDbAsyncQueryProvider<T> that allows interception of expression trees with expression visitors.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("David Fowler, Stef Heyenrath")]
-[assembly: AssemblyProduct("QueryInterceptor")]
-[assembly: AssemblyCopyright("Copyright © David Fowler 2011, Stef Heyenrath 2013")]
+[assembly: AssemblyProduct("QueryInterceptorAsync")]
+[assembly: AssemblyCopyright("Copyright © David Fowler 2011, Stef Heyenrath 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("12def7c2-a196-458e-8928-321e4543e303")]
+[assembly: Guid("12def7c2-a196-458e-8928-321e45434444")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.3.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
