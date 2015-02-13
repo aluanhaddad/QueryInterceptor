@@ -71,7 +71,7 @@ namespace QueryInterceptorAsyncCmdTest
         {
             Console.WriteLine("TestDb");
 
-            using (var context = new TestDatabaseEntities())
+            using (var context = GetContext())
             {
                 var task1 = context.People.Where(p => p.Id % 2 == 0).FirstAsync();
                 task1.ContinueWith(t => t.Result).Wait();
@@ -85,6 +85,26 @@ namespace QueryInterceptorAsyncCmdTest
                 task2.ContinueWith(t => t.Result).Wait();
 
                 Console.WriteLine("FirstAsync [InterceptWith] = '{0}'", task2.Result.Name);
+            }
+        }
+
+        private static TestDatabaseEntities GetContext()
+        {
+            TestDatabaseEntities ctx;
+
+            try
+            {
+                ctx = new TestDatabaseEntities();
+                ctx.Database.CommandTimeout = 5;
+                ctx.People.FirstOrDefault();
+                return ctx;
+            }
+            catch
+            {
+                ctx = new TestDatabaseEntities("name=TestDatabaseEntities_ProjectsV12");
+                ctx.Database.CommandTimeout = 5;
+                ctx.People.FirstOrDefault();
+                return ctx;
             }
         }
     }

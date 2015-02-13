@@ -16,7 +16,12 @@ namespace QueryInterceptorAsyncCmdTest
     public partial class TestDatabaseEntities : DbContext
     {
         public TestDatabaseEntities()
-            : base("name=TestDatabaseEntities")
+            : this("name=TestDatabaseEntities")
+        {
+    	}
+    
+        public TestDatabaseEntities(string nameOrConnectionString)
+            : base(nameOrConnectionString)
         {
         }
     
