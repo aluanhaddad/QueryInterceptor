@@ -6,6 +6,17 @@ using System.Linq.Expressions;
 
 namespace QueryInterceptor
 {
+    internal class QueryTranslator : QueryTranslator<object>
+    {
+        public QueryTranslator(IQueryable source, IEnumerable<ExpressionVisitor> visitors) : base(source, visitors)
+        {
+        }
+
+        public QueryTranslator(IQueryable source, Expression expression, IEnumerable<ExpressionVisitor> visitors) : base(source, expression, visitors)
+        {
+        }
+    }
+
     internal class QueryTranslator<T> : IOrderedQueryable<T>
     {
         private readonly Expression _expression;
