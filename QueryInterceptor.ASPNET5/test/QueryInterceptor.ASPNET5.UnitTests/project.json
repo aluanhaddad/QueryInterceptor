@@ -2,7 +2,7 @@
     "version": "1.0.0-*",
     "authors": [ "Stef Heyenrath" ],
     "dependencies": {
-        "QueryInterceptor.ASPNET5": "1.0.0.1-*",
+        "QueryInterceptor.ASPNET5": "1.0.0-*",
 
         "EntityFramework": "6.1.2",
         "xunit": "2.0.0.0-rc1-*",

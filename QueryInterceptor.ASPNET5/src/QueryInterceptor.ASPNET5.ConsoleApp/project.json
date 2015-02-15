@@ -2,7 +2,7 @@
     "version": "1.0.0-*",
     "authors": [ "Stef Heyenrath" ],
     "dependencies": {
-        "QueryInterceptor.ASPNET5": "1.0.0.1-*"
+        "QueryInterceptor.ASPNET5": "1.0.0-*"
     },
     "commands": {
         "run": "run"
