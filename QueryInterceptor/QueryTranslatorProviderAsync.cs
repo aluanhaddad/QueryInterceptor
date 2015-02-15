@@ -49,11 +49,8 @@ namespace QueryInterceptor
         public IQueryable CreateQuery(Expression expression)
         {
             Check.NotNull(expression, "expression");
-#if ASPNETCORE50
-            Type elementType = null;// expression.Type.GetTypeInfo().GetGenericTypeDefinition;
-#else
+
             Type elementType = expression.Type.GetGenericArguments().First();
-#endif
             return (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType), new object[] { Source, expression, _visitors });
         }
 
