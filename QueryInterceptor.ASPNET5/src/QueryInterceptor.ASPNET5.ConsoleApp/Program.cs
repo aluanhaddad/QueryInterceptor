@@ -34,6 +34,7 @@ namespace QueryInterceptor.ASPNET5.ConsoleApp
             List<int> numbersOdd = query.InterceptWith(visitor).Where(x => x >= 0).ToList();
             Console.WriteLine("numbersOdd  > 0 = {0}", string.Join(", ", numbersOdd));
 
+            Console.WriteLine("Press key...");
             Console.ReadLine();
         }
     }

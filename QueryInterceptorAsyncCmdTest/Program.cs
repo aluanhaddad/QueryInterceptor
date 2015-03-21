@@ -94,9 +94,12 @@ namespace QueryInterceptorAsyncCmdTest
 
             try
             {
+                
                 ctx = new TestDatabaseEntities();
                 ctx.Database.CommandTimeout = 5;
                 ctx.People.FirstOrDefault();
+
+                Console.WriteLine("Using connectionstring = TestDatabaseEntities");
                 return ctx;
             }
             catch
@@ -104,6 +107,8 @@ namespace QueryInterceptorAsyncCmdTest
                 ctx = new TestDatabaseEntities("name=TestDatabaseEntities_ProjectsV12");
                 ctx.Database.CommandTimeout = 5;
                 ctx.People.FirstOrDefault();
+
+                Console.WriteLine("Using connectionstring = TestDatabaseEntities_ProjectsV12");
                 return ctx;
             }
         }

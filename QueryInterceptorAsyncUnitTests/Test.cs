@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using QueryInterceptor;
 using Xunit;
-#if !(ASPNETCORE50 || ASPNET50)
 using System.Data.Entity;
-using System;
-#endif
 
 namespace QueryInterceptorAsyncUnitTests
 {
@@ -27,25 +25,8 @@ namespace QueryInterceptorAsyncUnitTests
 
     public class Test
     {
-        /*
         [Fact]
         public void InterceptWith_IQueryable()
-        {
-            IQueryable query = Enumerable.Range(0, 10).AsQueryable().Where(n => n % 2 == 0);
-            
-            var visitor = new EqualsToNotEqualsVisitor();
-            IQueryable queryIntercepted = query.InterceptWith(visitor);
-            Assert.NotNull(queryIntercepted);
-
-            Assert.Equal(typeof(object), queryIntercepted.ElementType);
-            Assert.Equal("QueryInterceptor.QueryTranslatorProviderAsync", queryIntercepted.Provider.ToString());
-
-            Expression<Func<int, bool>> predicate = x => x >= 0;
-            Assert.Equal(null, queryIntercepted.Provider.CreateQuery(predicate));
-        }
-
-        [Fact]
-        public void InterceptWith_IQueryableInt()
         {
             IQueryable<int> query = Enumerable.Range(0, 10).AsQueryable().Where(n => n % 2 == 0);
 
@@ -57,10 +38,9 @@ namespace QueryInterceptorAsyncUnitTests
             Assert.Equal("QueryInterceptor.QueryTranslatorProviderAsync", queryIntercepted.Provider.ToString());
 
             Expression<Func<int, bool>> predicate = x => x >= 0;
-            var queryCreated = queryIntercepted.Provider.CreateQuery(x => x >= 0);
+            var queryCreated = queryIntercepted.Provider.CreateQuery(predicate);
             Assert.NotNull(queryCreated);
         }
-        */
 
         [Fact]
         public void InterceptWith_TestEqualsToNotEqualsVisitor()
