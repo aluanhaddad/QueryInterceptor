@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using QueryInterceptor;
 using Xunit;
-using System.Data.Entity;
 
 namespace QueryInterceptorAsyncUnitTests
 {
@@ -57,12 +57,12 @@ namespace QueryInterceptorAsyncUnitTests
         [Fact]
         public void FirstAsync()
         {
-            var queryEven = Enumerable.Range(0, 10).AsQueryable().Where(n => n % 2 == 0);
+            var queryEven = Enumerable.Range(0, 10).AsQueryable().Where(n => n % 2 == 0).AsQueryable();
 
             var visitor = new EqualsToNotEqualsVisitor();
             var queryOdd = queryEven.InterceptWith(visitor);
 
-            var task = QueryableExtensions.FirstAsync(queryOdd, n => n > 5, CancellationToken.None);
+            var task = queryOdd.FirstAsync(n => n > 5, CancellationToken.None);
             task.ContinueWith(t => t.Result).Wait();
 
             Assert.Equal(7, task.Result);
