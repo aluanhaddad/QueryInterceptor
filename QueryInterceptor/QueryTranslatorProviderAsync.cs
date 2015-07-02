@@ -161,6 +161,19 @@ namespace QueryInterceptor
             return Source.Provider.CreateQuery(translated);
         }
 
+        internal IDbAsyncEnumerable ExecuteEnumerableAsync(Expression expression)
+        {
+            Check.NotNull(expression, "expression");
+
+            var provider = Source.Provider as IDbAsyncQueryProvider;
+            if (provider != null)
+            {
+                var translated = VisitAll(expression);
+                return (IDbAsyncEnumerable)provider.CreateQuery(translated);
+            }
+            throw new NotSupportedException("Provider must implement IDbAsyncQueryProvider in order for async enumerate methods. See https://msdn.microsoft.com/en-us/data/dn313107 for more information.");
+        }
+
         private Expression VisitAll(Expression expression)
         {
             // Run all visitors in order

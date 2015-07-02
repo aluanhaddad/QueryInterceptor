@@ -73,18 +73,24 @@ namespace QueryInterceptorAsyncCmdTest
 
             using (var context = GetContext())
             {
-                var task1 = context.People.Where(p => p.Id % 2 == 0).FirstAsync();
-                task1.ContinueWith(t => t.Result).Wait();
+                var query = context.People.Where(p => p.Id % 2 == 0);
+                var visitor = new EqualsToNotEqualsVisitor();
 
+                var task1 = query.FirstAsync();
+                task1.ContinueWith(t => t.Result).Wait();
                 Console.WriteLine("FirstAsync = '{0}'", task1.Result.Name);
 
-                var visitor = new EqualsToNotEqualsVisitor();
-                var query = context.People.InterceptWith(visitor).Where(p => p.Id % 2 == 0);
-
-                var task2 = query.FirstAsync();
+                var task2 = query.InterceptWith(visitor).FirstAsync();
                 task2.ContinueWith(t => t.Result).Wait();
-
                 Console.WriteLine("FirstAsync [InterceptWith] = '{0}'", task2.Result.Name);
+
+                var task3 = query.ToListAsync();
+                task3.ContinueWith(t => t.Result).Wait();
+                Console.WriteLine("ToListAsync = '{0}'", String.Join<string>(", ", task3.Result.Select(x => x.Name)));
+
+                var task4 = query.InterceptWith(visitor).ToListAsync();
+                task4.ContinueWith(t => t.Result).Wait();
+                Console.WriteLine("ToListAsync [InterceptWith] = '{0}'", String.Join<string>(", ", task4.Result.Select(x => x.Name)));
             }
         }
 

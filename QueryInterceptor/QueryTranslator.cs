@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -17,7 +18,7 @@ namespace QueryInterceptor
         }
     }
 
-    internal class QueryTranslator<T> : IOrderedQueryable<T>
+    internal class QueryTranslator<T> : IOrderedQueryable<T>, IDbAsyncEnumerable<T>
     {
         private readonly Expression _expression;
         private readonly QueryTranslatorProviderAsync _provider;
@@ -105,6 +106,26 @@ namespace QueryInterceptor
         public IQueryProvider Provider
         {
             get { return _provider; }
+        }
+
+        /// <summary>
+        /// Gets the asynchronous enumerator.
+        /// </summary>
+        /// <returns></returns>
+        IDbAsyncEnumerator<T> IDbAsyncEnumerable<T>.GetAsyncEnumerator()
+        {
+            return ((IDbAsyncEnumerable<T>)_provider.ExecuteEnumerableAsync(_expression)).GetAsyncEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that can be used to asynchronously enumerate the sequence.
+        /// </summary>
+        /// <returns>
+        /// Enumerator for asynchronous enumeration over the sequence.
+        /// </returns>
+        IDbAsyncEnumerator IDbAsyncEnumerable.GetAsyncEnumerator()
+        {
+            return _provider.ExecuteEnumerableAsync(_expression).GetAsyncEnumerator();
         }
     }
 }
