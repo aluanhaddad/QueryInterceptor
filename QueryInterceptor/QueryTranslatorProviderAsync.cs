@@ -12,7 +12,7 @@ namespace QueryInterceptor
 {
     internal class QueryTranslatorProviderAsync : QueryTranslatorProvider, IDbAsyncQueryProvider
     {
-        private readonly IEnumerable<ExpressionVisitor> _visitors;
+        public readonly IEnumerable<ExpressionVisitor> Visitors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryTranslatorProviderAsync"/> class.
@@ -25,7 +25,7 @@ namespace QueryInterceptor
             // ReSharper disable PossibleMultipleEnumeration
             Check.NotNull(visitors, "visitors");
 
-            _visitors = visitors;
+            Visitors = visitors;
             // ReSharper restore PossibleMultipleEnumeration
         }
 
@@ -39,7 +39,7 @@ namespace QueryInterceptor
         {
             Check.NotNull(expression, "expression");
 
-            return new QueryTranslator<TElement>(Source, expression, _visitors);
+            return new QueryTranslator<TElement>(Source, expression, Visitors);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace QueryInterceptor
             Check.NotNull(expression, "expression");
 
             Type elementType = expression.Type.GetGenericArguments().First();
-            return (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType), new object[] { Source, expression, _visitors });
+            return (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType), new object[] { Source, expression, Visitors });
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace QueryInterceptor
         private Expression VisitAll(Expression expression)
         {
             // Run all visitors in order
-            var visitors = new ExpressionVisitor[] { this }.Concat(_visitors);
+            var visitors = new ExpressionVisitor[] { this }.Concat(Visitors);
 
             return visitors.Aggregate(expression, (expr, visitor) => visitor.Visit(expr));
         }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace QueryInterceptor
 {
@@ -38,6 +41,48 @@ namespace QueryInterceptor
             _expression = Expression.Constant(this);
             _provider = new QueryTranslatorProviderAsync(source, visitors);
             // ReSharper restore PossibleMultipleEnumeration
+        }
+
+        public QueryTranslator<T> Include<TProperty>(Expression<Func<TProperty>> path)
+        {
+            Check.NotNull(path, nameof(path));
+
+            var dbHelpers = Type.GetType(
+                "System.Data.Entity.Internal.DbHelpers, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+
+            Check.NotNull(dbHelpers, nameof(dbHelpers));
+
+            // ReSharper disable once PossibleNullReferenceException
+            var method = dbHelpers.GetMethod("TryParsePath", BindingFlags.NonPublic | BindingFlags.Static);
+
+            object[] args = {path.Body, string.Empty};
+
+            var result = (bool) method.Invoke(null, args);
+            var outPath = (string) args[1];
+            if (!result || outPath == null)
+            {
+                throw new ArgumentException(
+                    "The Include path expression must refer to a navigation property defined on the type. Use dotted paths for reference navigation properties and the Select operator for collection navigation properties.",
+                    nameof(path));
+            }
+
+            return Include(outPath);
+        }
+
+        public QueryTranslator<T> Include(string path)
+        {
+            var dbQuery = _provider.Source as DbQuery<T>;
+            if (dbQuery != null)
+            {
+                return new QueryTranslator<T>(dbQuery.Include(path), _provider.Visitors);
+            }
+
+            var objectQuery = _provider.Source as ObjectQuery<T>;
+            if (objectQuery != null)
+            {
+                return new QueryTranslator<T>(objectQuery.Include(path), _provider.Visitors);
+            }
+            return this;
         }
 
         /// <summary>
