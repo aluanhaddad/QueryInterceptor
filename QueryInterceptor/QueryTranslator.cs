@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -74,13 +73,13 @@ namespace QueryInterceptor
             var dbQuery = _provider.Source as DbQuery<T>;
             if (dbQuery != null)
             {
-                return new QueryTranslator<T>(dbQuery.Include(path), _provider.Visitors);
+                return new QueryTranslator<T>(dbQuery.Include(path), Expression, _provider.Visitors);
             }
 
             var objectQuery = _provider.Source as ObjectQuery<T>;
             if (objectQuery != null)
             {
-                return new QueryTranslator<T>(objectQuery.Include(path), _provider.Visitors);
+                return new QueryTranslator<T>(objectQuery.Include(path), Expression, _provider.Visitors);
             }
             return this;
         }
