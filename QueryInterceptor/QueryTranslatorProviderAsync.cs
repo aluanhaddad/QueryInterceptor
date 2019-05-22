@@ -23,7 +23,7 @@ namespace QueryInterceptor
             : base(source)
         {
             // ReSharper disable PossibleMultipleEnumeration
-            Check.NotNull(visitors, "visitors");
+            Check.NotNull(visitors, nameof(visitors));
 
             Visitors = visitors;
             // ReSharper restore PossibleMultipleEnumeration
@@ -37,7 +37,7 @@ namespace QueryInterceptor
         /// <returns>IQueryable{TElement}</returns>
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             return new QueryTranslator<TElement>(Source, expression, Visitors);
         }
@@ -49,7 +49,7 @@ namespace QueryInterceptor
         /// <returns>An <see cref="T:System.Linq.IQueryable" /> that can evaluate the query represented by the specified expression tree.</returns>
         public IQueryable CreateQuery(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             Type elementType = expression.Type.GetGenericArguments().First();
             return (IQueryable)Activator.CreateInstance(typeof(QueryTranslator<>).MakeGenericType(elementType), new object[] { Source, expression, Visitors });
@@ -62,7 +62,7 @@ namespace QueryInterceptor
         /// <returns>The value that results from executing the specified query.</returns>
         public TResult Execute<TResult>(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             var translated = VisitAll(expression);
             return Source.Provider.Execute<TResult>(translated);
@@ -75,7 +75,7 @@ namespace QueryInterceptor
         /// <returns>The value that results from executing the specified query.</returns>
         public object Execute(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             return Execute<object>(expression);
         }
@@ -106,12 +106,11 @@ namespace QueryInterceptor
         /// </returns>
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var provider = Source.Provider as IDbAsyncQueryProvider;
-            if (provider != null)
+            if (Source.Provider is IDbAsyncQueryProvider provider)
             {
                 var translated = VisitAll(expression);
                 return provider.ExecuteAsync<TResult>(translated, cancellationToken);
@@ -131,7 +130,7 @@ namespace QueryInterceptor
         /// </returns>
         public Task<object> ExecuteAsync(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             return ExecuteAsync(expression, CancellationToken.None);
         }
@@ -148,14 +147,14 @@ namespace QueryInterceptor
         /// </returns>
         public Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             return ExecuteAsync<object>(expression, cancellationToken);
         }
 
         internal IEnumerable ExecuteEnumerable(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
             var translated = VisitAll(expression);
             return Source.Provider.CreateQuery(translated);
@@ -163,10 +162,9 @@ namespace QueryInterceptor
 
         internal IDbAsyncEnumerable ExecuteEnumerableAsync(Expression expression)
         {
-            Check.NotNull(expression, "expression");
+            Check.NotNull(expression, nameof(expression));
 
-            var provider = Source.Provider as IDbAsyncQueryProvider;
-            if (provider != null)
+            if (Source.Provider is IDbAsyncQueryProvider provider)
             {
                 var translated = VisitAll(expression);
                 return (IDbAsyncEnumerable)provider.CreateQuery(translated);
@@ -191,14 +189,12 @@ namespace QueryInterceptor
         /// </returns>
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            Check.NotNull(node, "node");
+            Check.NotNull(node, nameof(node));
 
             // Fix up the Expression tree to work with the underlying LINQ provider
             if (node.Type.IsGenericType() && node.Type.GetGenericTypeDefinition() == typeof(QueryTranslator<>))
             {
-                var provider = ((IQueryable)node.Value).Provider as QueryTranslatorProvider;
-
-                if (provider != null)
+                if (((IQueryable)node.Value).Provider is QueryTranslatorProvider provider)
                 {
                     return provider.Source.Expression;
                 }

@@ -32,10 +32,10 @@ namespace QueryInterceptor
         /// <param name="visitors">The visitors.</param>
         public QueryTranslator(IQueryable source, IEnumerable<ExpressionVisitor> visitors)
         {
-            Check.NotNull(source, "source");
+            Check.NotNull(source, nameof(source));
 
             // ReSharper disable PossibleMultipleEnumeration
-            Check.NotNull(visitors, "visitors");
+            Check.NotNull(visitors, nameof(visitors));
 
             _expression = Expression.Constant(this);
             _provider = new QueryTranslatorProviderAsync(source, visitors);
@@ -54,10 +54,10 @@ namespace QueryInterceptor
             // ReSharper disable once PossibleNullReferenceException
             var method = dbHelpers.GetMethod("TryParsePath", BindingFlags.NonPublic | BindingFlags.Static);
 
-            object[] args = {path.Body, string.Empty};
+            object[] args = { path.Body, string.Empty };
 
-            var result = (bool) method.Invoke(null, args);
-            var outPath = (string) args[1];
+            var result = (bool)method.Invoke(null, args);
+            var outPath = (string)args[1];
             if (!result || outPath == null)
             {
                 throw new ArgumentException(
@@ -70,14 +70,12 @@ namespace QueryInterceptor
 
         public QueryTranslator<T> Include(string path)
         {
-            var dbQuery = _provider.Source as DbQuery<T>;
-            if (dbQuery != null)
+            if (_provider.Source is DbQuery<T> dbQuery)
             {
                 return new QueryTranslator<T>(dbQuery.Include(path), Expression, _provider.Visitors);
             }
 
-            var objectQuery = _provider.Source as ObjectQuery<T>;
-            if (objectQuery != null)
+            if (_provider.Source is ObjectQuery<T> objectQuery)
             {
                 return new QueryTranslator<T>(objectQuery.Include(path), Expression, _provider.Visitors);
             }
@@ -92,11 +90,11 @@ namespace QueryInterceptor
         /// <param name="visitors">The visitors.</param>
         public QueryTranslator(IQueryable source, Expression expression, IEnumerable<ExpressionVisitor> visitors)
         {
-            Check.NotNull(source, "source");
-            Check.NotNull(expression, "expression");
+            Check.NotNull(source, nameof(source));
+            Check.NotNull(expression, nameof(expression));
 
             // ReSharper disable PossibleMultipleEnumeration
-            Check.NotNull(visitors, "visitors");
+            Check.NotNull(visitors, nameof(visitors));
 
             _expression = expression;
             _provider = new QueryTranslatorProviderAsync(source, visitors);
@@ -129,8 +127,7 @@ namespace QueryInterceptor
         /// Gets the type of the element(s) that are returned when the expression tree associated with this instance of <see cref="T:System.Linq.IQueryable" /> is executed.
         /// </summary>
         /// <returns>A <see cref="T:System.Type" /> that represents the type of the element(s) that are returned when the expression tree associated with this object is executed.</returns>
-        public Type ElementType
-        {
+        public Type ElementType {
             get { return typeof(T); }
         }
 
@@ -138,8 +135,7 @@ namespace QueryInterceptor
         /// Gets the expression tree that is associated with the instance of <see cref="T:System.Linq.IQueryable" />.
         /// </summary>
         /// <returns>The <see cref="T:System.Linq.Expressions.Expression" /> that is associated with this instance of <see cref="T:System.Linq.IQueryable" />.</returns>
-        public Expression Expression
-        {
+        public Expression Expression {
             get { return _expression; }
         }
 
@@ -147,8 +143,7 @@ namespace QueryInterceptor
         /// Gets the query provider that is associated with this data source.
         /// </summary>
         /// <returns>The <see cref="T:System.Linq.IQueryProvider" /> that is associated with this data source.</returns>
-        public IQueryProvider Provider
-        {
+        public IQueryProvider Provider {
             get { return _provider; }
         }
 

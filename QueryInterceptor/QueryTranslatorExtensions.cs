@@ -14,8 +14,8 @@ namespace QueryInterceptor
         /// <returns>IQueryable{T}</returns>
         public static IQueryable<T> InterceptWith<T>(this IQueryable<T> source, params ExpressionVisitor[] visitors)
         {
-            Check.NotNull(source, "source");
-            Check.NotNull(visitors, "visitors");
+            Check.NotNull(source, nameof(source));
+            Check.NotNull(visitors, nameof(visitors));
 
             return new QueryTranslator<T>(source, visitors);
         }
@@ -29,8 +29,8 @@ namespace QueryInterceptor
         /// <returns>IQueryable</returns>
         public static IQueryable InterceptWith(this IQueryable source, params ExpressionVisitor[] visitors)
         {
-            Check.NotNull(source, "source");
-            Check.NotNull(visitors, "visitors");
+            Check.NotNull(source, nameof(source));
+            Check.NotNull(visitors, nameof(visitors));
 
             return new QueryTranslator(source, visitors);
         }

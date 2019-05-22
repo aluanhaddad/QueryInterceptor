@@ -13,7 +13,7 @@ namespace QueryInterceptor
         /// <param name="source">The source.</param>
         protected QueryTranslatorProvider(IQueryable source)
         {
-            Check.NotNull(source, "source");
+            Check.NotNull(source, nameof(source));
 
             _source = source;
         }
